@@ -25,8 +25,13 @@ import java.util.Map;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class SlateGenerator {
-    
+
     public static void main(String[] args) {
+        if (args.length == 0) {
+            //do it all
+            args = new String[]{"generate", "-l ruby,java,javascript,php,python,CsharpDotNet2", "-i"+new File("src/main/resources/rakam-example-spec.json").getAbsoluteFile(), "-o ./"};
+        }
+
         Cli.CliBuilder<Runnable> builder = Cli.<Runnable>builder("swagger")
                 .withDescription("Swagger code generator CLI. More info on swagger.io")
                 .withCommands(
@@ -72,7 +77,7 @@ public class SlateGenerator {
             ImmutableList.Builder<CodegenConfigurator> builder = ImmutableList.builder();
             List<String> langList = ImmutableList.copyOf(Splitter.on(",").trimResults().split(langs));
             List<String> configFiles;
-            if(configFile != null) {
+            if (configFile != null) {
                 configFiles = ImmutableList.copyOf(Splitter.on(",").trimResults().split(configFile));
             } else {
                 configFiles = ImmutableList.of();
@@ -82,7 +87,7 @@ public class SlateGenerator {
                 String config = configFiles.size() > i ? configFiles.get(i) : null;
 
                 CodegenConfigurator configurator;
-                if(config == null) {
+                if (config == null) {
                     configurator = new CodegenConfigurator();
                 } else {
                     configurator = CodegenConfigurator.fromFile(config);
@@ -116,8 +121,7 @@ public class SlateGenerator {
                 File dir = new File(output);
                 if (!dir.exists()) {
                     dir.mkdirs();
-                } else
-                if(dir.isFile()) {
+                } else if (dir.isFile()) {
                     throw new IllegalArgumentException("Output must be a directory");
                 }
                 File file = new File(dir, "slate.md");
@@ -170,9 +174,9 @@ public class SlateGenerator {
 
             List<String> results = new ArrayList<String>();
 
-            if(input != null && !input.isEmpty()) {
+            if (input != null && !input.isEmpty()) {
                 for (String value : input.split(",")) {
-                    if(isNotEmpty(value))
+                    if (isNotEmpty(value))
                         results.add(value);
                 }
             }

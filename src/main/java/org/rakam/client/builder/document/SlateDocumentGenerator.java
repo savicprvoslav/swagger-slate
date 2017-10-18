@@ -44,6 +44,9 @@ public class SlateDocumentGenerator
             .add("java")
             .add("python")
             .add("php")
+            .add("ruby")
+            .add("javascript")
+            .add("CsharpDotNet2")
             .build();
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final String TERMS_OF_SERVICE = "Terms of service: ";
@@ -489,6 +492,7 @@ public class SlateDocumentGenerator
         for (Map.Entry<String, Map.Entry<CodegenConfig, DefaultGenerator>> entry : languages.entrySet()) {
             String language = entry.getKey();
             Map.Entry<CodegenConfig, DefaultGenerator> value = entry.getValue();
+
 
             Map<String, List<CodegenOperation>> operations = value.getValue().processPaths(swagger.getPaths());
             for (String parentTag : operations.keySet()) {
