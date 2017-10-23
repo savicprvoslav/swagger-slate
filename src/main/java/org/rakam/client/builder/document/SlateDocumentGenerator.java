@@ -71,18 +71,18 @@ public class SlateDocumentGenerator
     public MarkdownBuilder build()
             throws IOException
     {
-        markdownBuilder.textLine("---");
-        markdownBuilder.textLine("title: API Reference");
-        markdownBuilder.textLine("language_tabs:");
-        markdownBuilder.textLine("  - shell");
-        configurators.stream().map(c -> c.getLang()).forEach(lang -> markdownBuilder.textLine("  - " + lang));
-
-        markdownBuilder.textLine("toc_footers:");
-        markdownBuilder.textLine(" - <a href='#'>Sign Up for a Developer Key</a>");
-
-        markdownBuilder.textLine("includes:").textLine("    - errors");
-        markdownBuilder.textLine("search: true");
-        markdownBuilder.textLine("---");
+//        markdownBuilder.textLine("---");
+//        markdownBuilder.textLine("title: API Reference");
+//        markdownBuilder.textLine("language_tabs:");
+//        markdownBuilder.textLine("  - shell");
+//        configurators.stream().map(c -> c.getLang()).forEach(lang -> markdownBuilder.textLine("  - " + lang));
+//
+//        markdownBuilder.textLine("toc_footers:");
+//        markdownBuilder.textLine(" - <a href='#'>Sign Up for a Developer Key</a>");
+//
+//        markdownBuilder.textLine("includes:").textLine("    - errors");
+//        markdownBuilder.textLine("search: true");
+//        markdownBuilder.textLine("---");
 
         this.templates = generateExampleUsages();
         buildSlateDocument();
