@@ -1,5 +1,11 @@
 # swagger-slate
-Generates Slate documentation from your Swagger specification
+Generates Slate documentation from your Swagger specification. Documentation includes code examples for:
+
+* ruby
+* java
+* javascript
+* php
+* python
 
 
 # Building
