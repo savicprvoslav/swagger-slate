@@ -11,6 +11,7 @@ import io.github.robwin.markup.builder.markdown.MarkdownBuilder;
 import io.swagger.codegen.CodegenConstants;
 import io.swagger.codegen.config.CodegenConfigurator;
 import org.apache.commons.lang3.tuple.Pair;
+import org.rakam.client.builder.document.SlateConfiguration;
 import org.rakam.client.builder.document.SlateDocumentGenerator;
 
 import java.io.File;
@@ -29,7 +30,11 @@ public class SlateGenerator {
     public static void main(String[] args) {
         if (args.length == 0) {
             //do it all
-            args = new String[]{"generate", "-l ruby,java,javascript,php,python,CsharpDotNet2", "-i"+new File("src/main/resources/rakam-example-spec.json").getAbsoluteFile(), "-o ./"};
+            args = new String[]{"generate",
+                    "-l ruby,java,javascript,php,python,CsharpDotNet2",
+                    "-i" + new File("src/main/resources/rakam-example-spec.json").getAbsoluteFile(),
+                    "-d=false",
+                    "-o ./"};
         }
 
         Cli.CliBuilder<Runnable> builder = Cli.<Runnable>builder("swagger")
@@ -70,6 +75,9 @@ public class SlateGenerator {
         @Option(name = {"-o", "--output"}, title = "output directory",
                 description = "where to write the generated files (current dir by default)")
         private String output = "";
+
+        @Option(name = {"-d"}, title = "generate tag description", description = "Specify if tag description should be generated")
+        private String generateTagDescription = "true";
 
         @Override
         public void run() {
@@ -117,7 +125,7 @@ public class SlateGenerator {
             }
 
             try {
-                MarkdownBuilder build = new SlateDocumentGenerator(builder.build()).build();
+                MarkdownBuilder build = new SlateDocumentGenerator(builder.build(), new SlateConfiguration(Boolean.parseBoolean(generateTagDescription))).build();
                 File dir = new File(output);
                 if (!dir.exists()) {
                     dir.mkdirs();
