@@ -72,19 +72,6 @@ public class SlateDocumentGenerator {
 
     public MarkdownBuilder build()
             throws IOException {
-//        markdownBuilder.textLine("---");
-//        markdownBuilder.textLine("title: API Reference");
-//        markdownBuilder.textLine("language_tabs:");
-//        markdownBuilder.textLine("  - shell");
-//        configurators.stream().map(c -> c.getLang()).forEach(lang -> markdownBuilder.textLine("  - " + lang));
-//
-//        markdownBuilder.textLine("toc_footers:");
-//        markdownBuilder.textLine(" - <a href='#'>Sign Up for a Developer Key</a>");
-//
-//        markdownBuilder.textLine("includes:").textLine("    - errors");
-//        markdownBuilder.textLine("search: true");
-//        markdownBuilder.textLine("---");
-
         this.templates = generateExampleUsages();
         buildSlateDocument();
         new DefinitionsDocument(this.swagger, markdownBuilder).process(definitions);
@@ -94,67 +81,69 @@ public class SlateDocumentGenerator {
     private void buildSlateDocument() {
         Info info = swagger.getInfo();
 
-        markdownBuilder.documentTitle("Introduction");
+        if (configuration.getGenerateIntroduction()) {
+            markdownBuilder.documentTitle("Introduction");
 
-        markdownBuilder.listing("We have language bindings in " +
-                configurators.stream().map(c -> c.getLang()).collect(Collectors.joining(", "))
-                + "! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.");
+            markdownBuilder.listing("We have language bindings in " +
+                    configurators.stream().map(c -> c.getLang()).collect(Collectors.joining(", "))
+                    + "! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.");
 
-        if (info.getDescription() != null) {
-            markdownBuilder.textLine(info.getDescription());
-            markdownBuilder.newLine();
+            if (info.getDescription() != null) {
+                markdownBuilder.textLine(info.getDescription());
+                markdownBuilder.newLine();
+            }
+
+            if (StringUtils.isNotBlank(info.getVersion())) {
+                markdownBuilder.sectionTitleLevel2("Version");
+                markdownBuilder.textLine("Version: " + info.getVersion());
+                markdownBuilder.newLine();
+            }
+
+            Contact contact = info.getContact();
+            if (contact != null) {
+                markdownBuilder.sectionTitleLevel1("Contact Information");
+                if (StringUtils.isNotBlank(contact.getName())) {
+                    markdownBuilder.textLine("Contact: " + contact.getName());
+                }
+                if (StringUtils.isNotBlank(contact.getEmail())) {
+                    markdownBuilder.textLine("Email: " + contact.getEmail());
+                }
+                markdownBuilder.newLine();
+            }
+
+            License license = info.getLicense();
+            if (license != null && (StringUtils.isNotBlank(license.getName()) || StringUtils.isNotBlank(license.getUrl()))) {
+                markdownBuilder.sectionTitleLevel2("License");
+                if (StringUtils.isNotBlank(license.getName())) {
+                    markdownBuilder.textLine("License: " + license.getName()).newLine();
+                }
+                if (StringUtils.isNotBlank(license.getUrl())) {
+                    markdownBuilder.textLine("License url: " + license.getUrl());
+                }
+                markdownBuilder.newLine();
+            }
+
+            if (StringUtils.isNotBlank(info.getTermsOfService())) {
+                markdownBuilder.textLine(TERMS_OF_SERVICE + info.getTermsOfService());
+                markdownBuilder.newLine();
+            }
+
+
+            if (StringUtils.isNotBlank(swagger.getHost()) || StringUtils.isNotBlank(swagger.getBasePath())) {
+                markdownBuilder.sectionTitleLevel2(URI_SCHEME);
+                if (StringUtils.isNotBlank(swagger.getHost())) {
+                    markdownBuilder.textLine(HOST + swagger.getHost());
+                }
+                if (StringUtils.isNotBlank(swagger.getBasePath())) {
+                    markdownBuilder.textLine(BASE_PATH + swagger.getBasePath());
+                }
+                if (swagger.getSchemes() != null && !swagger.getSchemes().isEmpty()) {
+                    List<String> schemes = swagger.getSchemes().stream().map(Scheme::toString).collect(Collectors.toList());
+                    markdownBuilder.textLine(SCHEMES + StringUtils.join(schemes, ", "));
+                }
+                markdownBuilder.newLine();
+            }
         }
-
-        if (StringUtils.isNotBlank(info.getVersion())) {
-            markdownBuilder.sectionTitleLevel2("Version");
-            markdownBuilder.textLine("Version: " + info.getVersion());
-            markdownBuilder.newLine();
-        }
-
-        Contact contact = info.getContact();
-        if (contact != null) {
-            markdownBuilder.sectionTitleLevel1("Contact Information");
-            if (StringUtils.isNotBlank(contact.getName())) {
-                markdownBuilder.textLine("Contact: " + contact.getName());
-            }
-            if (StringUtils.isNotBlank(contact.getEmail())) {
-                markdownBuilder.textLine("Email: " + contact.getEmail());
-            }
-            markdownBuilder.newLine();
-        }
-
-        License license = info.getLicense();
-        if (license != null && (StringUtils.isNotBlank(license.getName()) || StringUtils.isNotBlank(license.getUrl()))) {
-            markdownBuilder.sectionTitleLevel2("License");
-            if (StringUtils.isNotBlank(license.getName())) {
-                markdownBuilder.textLine("License: " + license.getName()).newLine();
-            }
-            if (StringUtils.isNotBlank(license.getUrl())) {
-                markdownBuilder.textLine("License url: " + license.getUrl());
-            }
-            markdownBuilder.newLine();
-        }
-
-        if (StringUtils.isNotBlank(info.getTermsOfService())) {
-            markdownBuilder.textLine(TERMS_OF_SERVICE + info.getTermsOfService());
-            markdownBuilder.newLine();
-        }
-
-        if (StringUtils.isNotBlank(swagger.getHost()) || StringUtils.isNotBlank(swagger.getBasePath())) {
-            markdownBuilder.sectionTitleLevel2(URI_SCHEME);
-            if (StringUtils.isNotBlank(swagger.getHost())) {
-                markdownBuilder.textLine(HOST + swagger.getHost());
-            }
-            if (StringUtils.isNotBlank(swagger.getBasePath())) {
-                markdownBuilder.textLine(BASE_PATH + swagger.getBasePath());
-            }
-            if (swagger.getSchemes() != null && !swagger.getSchemes().isEmpty()) {
-                List<String> schemes = swagger.getSchemes().stream().map(Scheme::toString).collect(Collectors.toList());
-                markdownBuilder.textLine(SCHEMES + StringUtils.join(schemes, ", "));
-            }
-            markdownBuilder.newLine();
-        }
-
         if (!swagger.getTags().isEmpty()) {
             for (Tag tag : swagger.getTags()) {
                 String name = tag.getName();

@@ -34,6 +34,7 @@ public class SlateGenerator {
                     "-l ruby,java,javascript,php,python,CsharpDotNet2",
                     "-i" + new File("src/main/resources/rakam-example-spec.json").getAbsoluteFile(),
                     "-d=false",
+                    "-n=false",
                     "-o ./"};
         }
 
@@ -78,6 +79,11 @@ public class SlateGenerator {
 
         @Option(name = {"-d"}, title = "generate tag description", description = "Specify if tag description should be generated")
         private String generateTagDescription = "true";
+
+        @Option(name = {"-n"}, title = "generate introduction", description = "Specify if introduction should be generated")
+        private String generateIntroduction = "true";
+
+
 
         @Override
         public void run() {
@@ -125,7 +131,7 @@ public class SlateGenerator {
             }
 
             try {
-                MarkdownBuilder build = new SlateDocumentGenerator(builder.build(), new SlateConfiguration(Boolean.parseBoolean(generateTagDescription))).build();
+                MarkdownBuilder build = new SlateDocumentGenerator(builder.build(), new SlateConfiguration(Boolean.parseBoolean(generateTagDescription),Boolean.parseBoolean(generateIntroduction))).build();
                 File dir = new File(output);
                 if (!dir.exists()) {
                     dir.mkdirs();
